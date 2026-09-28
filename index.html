@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Giờ Nghỉ — Đặt Đồ Uống</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FAF6EF;
+    --paper:#FFFFFF;
+    --espresso:#2B1D14;
+    --caramel:#7A5C3E;
+    --burnt:#C1440E;
+    --burnt-dark:#9E370A;
+    --mint:#4A7856;
+    --line:#E7DFD2;
+    --shadow: 0 2px 10px rgba(43,29,20,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--espresso);
+    font-family:'Inter',sans-serif;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-tap-highlight-color:transparent;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:20px 18px 140px;}
+  header{padding:6px 0 22px;}
+  header .eyebrow{font-size:13px;color:var(--caramel);margin:0 0 4px;}
+  h1{
+    font-family:'Fraunces',serif;
+    font-size:30px;
+    font-weight:600;
+    line-height:1.15;
+    margin:0 0 6px;
+    color:var(--espresso);
+  }
+  header p{margin:0;font-size:14.5px;color:var(--caramel);}
+
+  .field{margin-bottom:22px;}
+  .field label{display:block;font-size:13.5px;font-weight:600;margin-bottom:7px;color:var(--espresso);}
+  .field input, .field textarea{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    color:var(--espresso);
+  }
+  .field input:focus, .field textarea:focus{outline:2px solid var(--burnt);outline-offset:1px;border-color:var(--burnt);}
+  .field textarea{resize:vertical;min-height:56px;}
+
+  .section-title{
+    font-family:'Fraunces',serif;
+    font-size:19px;
+    font-weight:600;
+    margin:28px 0 14px;
+  }
+
+  .item{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px 14px 16px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+  }
+  .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .item-name{font-weight:600;font-size:15.5px;}
+  .item-price{color:var(--caramel);font-size:13.5px;margin-top:2px;}
+  .item-total{font-weight:700;font-size:15px;white-space:nowrap;}
+
+  .item-controls{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px;}
+  select.mini{
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:7px 8px;
+    font-size:13px;
+    background:var(--cream);
+    color:var(--espresso);
+    font-family:'Inter',sans-serif;
+    flex:1;
+    min-width:0;
+  }
+  .qty{margin-left:auto;display:flex;align-items:center;gap:0;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;flex-shrink:0;}
+  .qty button{
+    width:32px;height:32px;border:none;background:var(--paper);
+    font-size:17px;color:var(--burnt);cursor:pointer;line-height:1;
+  }
+  .qty button:active{background:var(--cream);}
+  .qty span{width:26px;text-align:center;font-weight:600;font-size:14.5px;}
+
+  .cartbar{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--espresso);
+    color:var(--cream);
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -4px 18px rgba(0,0,0,0.18);
+  }
+  .cartbar-inner{max-width:480px;margin:0 auto;}
+  .cartbar-row{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;color:#D8CBB8;margin-bottom:2px;}
+  .cartbar-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .cartbar-total .label{font-size:14px;color:#D8CBB8;}
+  .cartbar-total .amount{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#fff;}
+  .send-btn{
+    width:100%;border:none;border-radius:10px;
+    background:var(--burnt);color:#fff;
+    padding:13px;font-size:15.5px;font-weight:600;
+    font-family:'Inter',sans-serif;cursor:pointer;
+  }
+  .send-btn:disabled{background:#8a5a3d;cursor:not-allowed;}
+  .send-btn:active:not(:disabled){background:var(--burnt-dark);}
+
+  .toast{
+    position:fixed;left:50%;bottom:118px;transform:translate(-50%,10px);
+    background:var(--mint);color:#fff;padding:11px 18px;border-radius:10px;
+    font-size:14px;font-weight:500;opacity:0;transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;box-shadow:var(--shadow);z-index:20;max-width:90%;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+  .toast.error{background:var(--burnt-dark);}
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#1C1712; --paper:#26201A; --espresso:#F3EBDF; --caramel:#D9B48F;
+      --line:#3A3128; --shadow:0 2px 10px rgba(0,0,0,0.3);
+    }
+    :root:not([data-theme="light"]) .field input, :root:not([data-theme="light"]) .field textarea{color:#F3EBDF;}
+    :root:not([data-theme="light"]) select.mini{color:#F3EBDF;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    .tagline{font-weight:700;font-size:14px;letter-spacing:.04em;color:var(--burnt);margin:0 0 6px;}((
+    <p class="eyebrow">Anh em mình · Giờ nghỉ</p>
+    <h1>Đặt đồ uống chung</h1>
+    <p class="tagline">AN BAO (bao cao su)</p>
+    <p>Chọn món, ghi tên anh em, rồi gửi vào đơn chung nhé.</p>
+  </header>
+
+  <div class="field">
+    <label for="name">Tên người đặt</label>
+    <input id="name" type="text" placeholder="VD: Lan, Minh...">
+  </div>
+
+  <div class="section-title">Menu hôm nay</div>
+  <div id="menu"></div>
+
+  <div class="field" style="margin-top:20px;">
+    <label for="note">Ghi chú thêm (tuỳ chọn)</label>
+    <textarea id="note" placeholder="VD: giao tới bàn A3, ít đường hơn..."></textarea>
+  </div>
+</div>
+
+<div class="cartbar">
+  <div class="cartbar-inner">
+    <div class="cartbar-row"><span id="cartCount">Chưa có món nào</span><span id="cartItemsShort"></span></div>
+    <div class="cartbar-total"><span class="label">Tổng cộng</span><span class="amount" id="cartTotal">0đ</span></div>
+    <button class="send-btn" id="sendBtn">Gửi đơn hàng</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== CẤU HÌNH: dán URL Web App của Google Apps Script vào đây ======
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzfyRfEmQ6xwQ_YUaRidUYRrdaa87FEkYRlEo7QRounz2MEFBCWwcNmuTTAPYMmFdLw/exec";
+
+const MENU = [
+  { id:'caphesua', name:'Cà phê sữa', price:12000, custom:true },
+  { id:'caphaden', name:'Cà Phê Đen', price:10000, custom:true },
+  { id:'nuocngot', name:'Nước Ngọt', price:10000, custom:false },
+  { id:'duanho', name:'Dừa Nhỏ', price:10000, custom:false },
+  { id:'dualon', name:'Dừa Lớn', price:15000, custom:false },
+  { id:'bia', name:'Bia', price:15000, custom:false },
+];
+const SUGAR_LEVELS = ['100% đường','70% đường','50% đường','30% đường','Không đường'];
+const ICE_LEVELS = ['100% đá','70% đá','50% đá','30% đá','Không đá','Nóng'];
+
+const state = {}; // id -> {qty, sugar, ice}
+MENU.forEach(d => state[d.id] = { qty:0, sugar:SUGAR_LEVELS[0], ice:ICE_LEVELS[0] });
+
+const menuEl = document.getElementById('menu');
+function money(n){ return n.toLocaleString('vi-VN') + 'đ'; }
+
+function renderMenu(){
+  menuEl.innerHTML = MENU.map(d => {
+    const s = state[d.id];
+    const lineTotal = s.qty * d.price;
+    return `
+    <div class="item">
+      <div class="item-top">
+        <div>
+          <div class="item-name">${d.name}</div>
+          <div class="item-price">${money(d.price)}</div>
+        </div>
+        <div class="item-total">${s.qty > 0 ? money(lineTotal) : ''}</div>
+      </div>
+      <div class="item-controls">
+        ${d.custom ? `
+        <select class="mini" data-id="${d.id}" data-kind="sugar">
+          ${SUGAR_LEVELS.map(l => `<option ${l===s.sugar?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <select class="mini" data-id="${d.id}" data-kind="ice">
+          ${ICE_LEVELS.map(l => `<option ${l===s.ice?'selected':''}>${l}</option>`).join('')}
+        </select>` : ''}
+        <div class="qty">
+          <button data-id="${d.id}" data-act="minus" aria-label="Giảm">−</button>
+          <span>${s.qty}</span>
+          <button data-id="${d.id}" data-act="plus" aria-label="Tăng">+</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCart(){
+  const picked = MENU.filter(d => state[d.id].qty > 0);
+  const total = picked.reduce((sum,d) => sum + d.price * state[d.id].qty, 0);
+  document.getElementById('cartTotal').textContent = money(total);
+  document.getElementById('cartCount').textContent = picked.length
+    ? `${picked.reduce((n,d)=>n+state[d.id].qty,0)} món trong giỏ`
+    : 'Chưa có món nào';
+  document.getElementById('cartItemsShort').textContent = picked.map(d => `${d.name} x${state[d.id].qty}`).join(', ');
+  document.getElementById('sendBtn').disabled = picked.length === 0;
+}
+
+menuEl.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  if(btn.dataset.act === 'plus') state[id].qty++;
+  else state[id].qty = Math.max(0, state[id].qty - 1);
+  renderMenu(); renderCart();
+});
+menuEl.addEventListener('change', e => {
+  const sel = e.target.closest('select.mini');
+  if(!sel) return;
+  state[sel.dataset.id][sel.dataset.kind] = sel.value;
+});
+
+function showToast(msg, isError){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2600);
+}
+
+document.getElementById('sendBtn').addEventListener('click', async () => {
+  const name = document.getElementById('name').value.trim();
+  if(!name){ showToast('Bạn nhập tên trước đã nhé', true); document.getElementById('name').focus(); return; }
+
+  const picked = MENU.filter(d => state[d.id].qty > 0);
+  if(picked.length === 0){ showToast('Chọn ít nhất một món nhé', true); return; }
+
+  const total = picked.reduce((sum,d) => sum + d.price * state[d.id].qty, 0);
+  const itemsText = picked.map(d => {
+    const s = state[d.id];
+    return d.custom ? `${d.name} x${s.qty} (${s.sugar}, ${s.ice})` : `${d.name} x${s.qty}`;
+  }).join(' | ');
+
+  const payload = {
+    ten: name,
+    mon: itemsText,
+    ghiChu: document.getElementById('note').value.trim(),
+    tongTien: total,
+    thoiGian: new Date().toISOString()
+  };
+
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Đang gửi...';
+
+  try{
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script Web App thường cần no-cors từ trình duyệt
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    showToast('Đã gửi đơn — cảm ơn bạn!');
+    MENU.forEach(d => state[d.id] = { qty:0, sugar:SUGAR_LEVELS[0], ice:ICE_LEVELS[0] });
+    document.getElementById('note').value = '';
+    renderMenu(); renderCart();
+  }catch(err){
+    showToast('Gửi thất bại, thử lại nhé', true);
+  }finally{
+    sendBtn.textContent = 'Gửi đơn hàng';
+    renderCart();
+  }
+});
+
+renderMenu();
+renderCart();
+</script>
+</body>
+</html>
